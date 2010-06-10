@@ -1,0 +1,19 @@
+Beechat the first XMPP chat for Elgg
+====================================
+
+Beechat is a facebook like chat for elgg using the XMPP protocol. It requires the XMPP serveur ejabberd. 
+
+Installation
+------------
+
+French Documentation
+
+English Documentation
+
+Feedback
+--------
+
+We are relying on the [GitHub issues tracker][issues] linked from above for
+feedback. File bugs or other issues [here][issues].
+
+[issues]: http://github.com/beechannels/beechat/issues
