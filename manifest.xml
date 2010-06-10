@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin_manifest>
+  <field key="author" value="Beechannels" />
+  <field key="version" value="0.1" />
+  <field key="description" value="XMPP Chat for elgg" />
+  <field key="website" value="http://beechannels.com" />
+  <field key="copyright" value="(C) Beechannels 2007-2010" />
+</plugin_manifest>
