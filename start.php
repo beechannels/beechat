@@ -29,12 +29,7 @@
 		extend_view('css', 'beechat/screen.css');
 		extend_view('js/initialise_elgg', 'beechat/beechat.js');
 		
-		if (isloggedin())
-		{
-			$_SESSION['user']->nbfriends = (int)get_entities_from_relationship('friend', $_SESSION['user']->guid, false, "user", "", 0, "", 10, 0, true);
-			if ($_SESSION['user']->nbfriends)
-				extend_view('js/lib', 'beechat/beechat');
-		}
+		extend_view('js/lib', 'beechat/beechat');
 		
 		$CONFIG->chatsettings['domain'] = "BEEBAC";
 		$CONFIG->chatsettings['dbname'] = "ejabberd";
@@ -163,7 +158,7 @@ register_action('beechat/get_connection', false, $CONFIG->pluginspath . 'beechat
 register_action('beechat/get_state', false, $CONFIG->pluginspath . 'beechat/actions/get_state.php');
 register_action('beechat/save_state', false, $CONFIG->pluginspath . 'beechat/actions/save_state.php');
 
-register_plugin_hook('action', 'friend_request/approve', 'beechat_xmpp_add_friend');
+register_plugin_hook('action', 'friends/add', 'beechat_xmpp_add_friend');
 register_plugin_hook('action', 'friends/remove', 'beechat_xmpp_remove_friend');
 
 ?>
