@@ -16,7 +16,20 @@
 		GLOBAL $CONFIG;
 			
 		register_translations($CONFIG->pluginspath . "beechat/languages/");
-		
+
+		register_elgg_event_handler('pagesetup', 'system', 'beechat_pagesetup');
+
+		register_action('beechat/get_statuses', false, $CONFIG->pluginspath . 'beechat/actions/get_statuses.php');
+		register_action('beechat/get_icons', false, $CONFIG->pluginspath . 'beechat/actions/get_icons.php');
+		register_action('beechat/get_details', false, $CONFIG->pluginspath . 'beechat/actions/get_details.php');
+		register_action('beechat/get_connection', false, $CONFIG->pluginspath . 'beechat/actions/get_connection.php');
+		register_action('beechat/get_state', false, $CONFIG->pluginspath . 'beechat/actions/get_state.php');
+		register_action('beechat/save_state', false, $CONFIG->pluginspath . 'beechat/actions/save_state.php');
+
+		register_plugin_hook('action', 'friends/add', 'beechat_xmpp_add_friend');
+		register_plugin_hook('action', 'friends/remove', 'beechat_xmpp_remove_friend');
+
+	
 		extend_view('js/initialise_elgg', 'js/json2.js');
 		extend_view('js/initialise_elgg', 'js/jquery.cookie.min.js');
 		extend_view('js/initialise_elgg', 'js/jquery.scrollTo-min.js');
@@ -28,18 +41,33 @@
 		extend_view('js/initialise_elgg', 'js/jquery.tools.min.js');
 		extend_view('css', 'beechat/screen.css');
 		extend_view('js/initialise_elgg', 'beechat/beechat.js');
+		extend_view('metatags', 'beechat/beechat.userjs');
 		
-		extend_view('js/lib', 'beechat/beechat');
-		
-		$CONFIG->chatsettings['domain'] = "BEEBAC";
-		$CONFIG->chatsettings['dbname'] = "ejabberd";
-		$CONFIG->chatsettings['dbhost'] = "locahost";
-		$CONFIG->chatsettings['dbuser'] = "ejabberd";
-		$CONFIG->chatsettings['dbpassword'] = "PASSWORD";	
+		extend_view('footer/analytics', 'beechat/beechat');
+		$domain = get_plugin_setting("domain", "beechat");
+		$dbname = get_plugin_setting("dbname", "beechat");
+		$dbhost = get_plugin_setting("dbhost", "beechat");
+		$dbuser = get_plugin_setting("dbuser", "beechat");
+		$dbpassword = get_plugin_setting("dbpassword", "beechat");
+
+		$CONFIG->chatsettings['domain'] = $domain;
+		$CONFIG->chatsettings['dbname'] = $dbname;
+		$CONFIG->chatsettings['dbhost'] = $dbhost;
+		$CONFIG->chatsettings['dbuser'] = $dbuser;
+		$CONFIG->chatsettings['dbpassword'] = $dbpassword;
+
 	}
 
 	function beechat_pagesetup()
 	{
+		global $CONFIG;
+		if (get_context() == 'settings' && isloggedin()) {
+			if (get_loggedin_user()->chatenabled) {
+				add_submenu_item(elgg_echo('beechat:disablechat'), $CONFIG->wwwroot . "mod/beechat/disablechat.php");
+			}
+			else
+				add_submenu_item(elgg_echo('beechat:enablechat'), $CONFIG->wwwroot . "mod/beechat/enablechat.php");
+		}
 	}
 
 	function beechat_xmpp_add_friend($hook, $entity_type, $returnvalue, $params)
@@ -55,7 +83,7 @@
 		$user = $CONFIG->chatsettings['dbuser'];
 		$password = $CONFIG->chatsettings['dbpassword'];
 		
-		$friend_guid = get_input('guid', 0);
+		$friend_guid = get_input('friend', 0);
 		if (!$friend_guid || !$friend = get_entity($friend_guid))
 			return (false);
 		
@@ -96,7 +124,7 @@
 			return (false);
 		}
 		
-		return (true);
+		return $return_value;
 	}
 
 function beechat_xmpp_remove_friend($hook, $entity_type, $returnvalue, $params)
@@ -145,20 +173,8 @@ function beechat_xmpp_remove_friend($hook, $entity_type, $returnvalue, $params)
 		return (false);
 	}
 	
-	return (true);
+	return $return_value;
 }
 
 register_elgg_event_handler('init', 'system', 'beechat_init');
-register_elgg_event_handler('pagesetup', 'system', 'beechat_pagesetup');
-
-register_action('beechat/get_statuses', false, $CONFIG->pluginspath . 'beechat/actions/get_statuses.php');
-register_action('beechat/get_icons', false, $CONFIG->pluginspath . 'beechat/actions/get_icons.php');
-register_action('beechat/get_details', false, $CONFIG->pluginspath . 'beechat/actions/get_details.php');
-register_action('beechat/get_connection', false, $CONFIG->pluginspath . 'beechat/actions/get_connection.php');
-register_action('beechat/get_state', false, $CONFIG->pluginspath . 'beechat/actions/get_state.php');
-register_action('beechat/save_state', false, $CONFIG->pluginspath . 'beechat/actions/save_state.php');
-
-register_plugin_hook('action', 'friends/add', 'beechat_xmpp_add_friend');
-register_plugin_hook('action', 'friends/remove', 'beechat_xmpp_remove_friend');
-
 ?>

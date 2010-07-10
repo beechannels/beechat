@@ -23,7 +23,16 @@ $en_array = array(
 
 		  'beechat:box:minimize' => 'Minimize',
 		  'beechat:box:close' => 'Close',
-		  'beechat:box:showhide' => 'Show/Hide this chat window'
+		  'beechat:box:showhide' => 'Show/Hide this chat window',
+		  'beechat:enabled' => 'Chat enabled',
+		  'beechat:disabled' => 'Chat disabled',
+		  'beechat:enablechat' => 'Enable chat',
+		  'beechat:disablechat' => 'Disable chat',
+		  'beechat:domain' => 'Chat domain',
+		  'beechat:dbname' => 'Database name',
+		  'beechat:dbhost' => 'Database host',
+		  'beechat:dbuser' => 'Database user',
+		  'beechat:dbpassword' => 'Database password'
 		  );
 
 add_translation('en', $en_array);

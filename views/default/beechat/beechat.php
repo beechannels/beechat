@@ -8,6 +8,9 @@
 	 * @copyright Beechannels 2007-2010
 	 * @link http://beechannels.com/
 	 */
+
+if (isloggedin() && get_loggedin_user()->chatenabled) {
+
 ?>	 
 <div id="beechat">
   <div id="beechat_left">
@@ -55,15 +58,28 @@
   <div id="beechat_chatboxes"></div>
 </div>
 <!-- SOUNDS -->
+<!--
 <embed src="<?php echo $vars['config']->staticurl; ?>mod/beechat/sounds/newmessage.wav" autostart=false width=0 height=0
        id="beechat_sounds_new_message"
        enablejavascript="true" />
+-->
+
+<?php
+        $ts = time();
+        $token = generate_action_token($ts);
+?>
+
 <script>
 	$(window).load(function () {
 		var e = document.createElement('script');
 		e.async = true;
 		e.type = 'text/javascript';
-		e.innerHTML = 'init_beechat();';
-		document.getElementById('beechat').appendChild(e);
+                e.innerHTML = 'init_beechat("<?php echo $ts; ?>","<?php echo $token; ?>");';
+                document.getElementById('beechat').appendChild(e);
+
 	})
 </script>       
+
+<?php
+ }
+?>

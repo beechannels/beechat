@@ -14,6 +14,15 @@
 g_beechat_user = null;
 g_beechat_roster_items = null;
 
+function debugXMPP(msg) {
+	try {
+		console.log(msg)
+	}
+		catch (err) {
+	}
+	//$('#layout_footer').html($('#layout_footer').html()+'<br/>'+msg);
+}
+
 /** Class: BeeChat
  *  An object container for all BeeChat mod functions
  *
@@ -92,7 +101,6 @@ BeeChat = {
 	    RECV_PRESENCE: 2,
 	    RECV_CHAT_MESSAGE: 3
 	},
-
 	Messages: {
 	    ConnectionStates: {
 		CONNECTING: "<?php echo elgg_echo('beechat:connection:state:connecting'); ?>",
@@ -240,6 +248,7 @@ BeeChat.Core.User = function(jid)
      */
     this.connect = function(password)
     {
+	debugXMPP('connect');
 	if (_connection == null)
 	    _connection = new Strophe.Connection(BeeChat.BOSH_SERVICE);
 	_connection.connect(_jid, password, _onConnect);
@@ -268,6 +277,7 @@ BeeChat.Core.User = function(jid)
      */
     this.disconnect = function()
     {
+	debugXMPP('disconnect');
 	if (_connection != null) {
 	    _connection.disconnect();
 	    _connection = null;
@@ -392,10 +402,13 @@ BeeChat.Core.User = function(jid)
     {
 	var msg = null;
 
-	if (status == Strophe.Status.CONNECTING)
+	if (status == Strophe.Status.CONNECTING) 
+{
 	    msg = BeeChat.Events.Messages.ConnectionStates.CONNECTING;
-	else if (status == Strophe.Status.AUTHENTICATING)
+	}
+	else if (status == Strophe.Status.AUTHENTICATING) {
 	    msg = BeeChat.Events.Messages.ConnectionStates.AUTHENTICATING;
+	}
 	else if (status == Strophe.Status.AUTHFAIL)
 	    msg = BeeChat.Events.Messages.ConnectionStates.FAILED;
  	else if (status == Strophe.Status.CONNFAIL)
@@ -406,10 +419,10 @@ BeeChat.Core.User = function(jid)
 	    msg = BeeChat.Events.Messages.ConnectionStates.OFFLINE;
  	else if (status == Strophe.Status.CONNECTED) {
 	    msg = BeeChat.Events.Messages.ConnectionStates.ONLINE;
-
 	    _connection.addHandler(_onIQResult, null, 'iq', BeeChat.IQ.Types.RESULT, null, null);
 	    _connection.addHandler(_onPresence, null, 'presence', null, null, null);
 	    _connection.addHandler(_onMessageChat, null, 'message', BeeChat.Message.Types.CHAT, null, null);
+
 	}
 
 	_fire(BeeChat.Events.Identifiers.UPDATE_CONNECTION_STATE, msg);
@@ -459,8 +472,8 @@ BeeChat.Core.User = function(jid)
 	    contactBareJid: Strophe.getBareJidFromJid($(message).attr('from')),
 	    msg: message
 	};
-
 	_msgTemp.push(data);
+	//alert("message");
 	if (_initialized == true) {
 	    for (var key in _msgTemp) {
 		if (typeof _msgTemp[key] != 'object')
@@ -533,7 +546,9 @@ BeeChat.Core.Roster = function()
 
     this.setStatuses = function(statuses)
     {
+//alert(statuses);
 	for (var key in statuses)  {
+//alert(statuses);
 	    _items[key + '@' + BeeChat.DOMAIN].status = statuses[key];
 	}
     }
@@ -595,6 +610,8 @@ BeeChat.Core.Roster = function()
 
 	attr.presences[jid] = {};
 	attr.presences[jid].type = (!$(presence).attr('type')) ? 'available' : $(presence).attr('type');
+	//alert($(presence).attr('from')+presence.toString());
+	//alert("presencetype"+attr.presences[jid].type);
 
 	if (attr.presences[jid].type == 'available') {
 	    $(presence).children().each(function() {
@@ -795,7 +812,7 @@ BeeChat.UI = {
 
     Resources: {
 	Paths: {
-	    ICONS: '<?php echo $vars['config']->staticurl; ?>mod/beechat/graphics/icons/',
+	    ICONS: '<?php echo $vars['config']->url; ?>mod/beechat/graphics/icons/',
 	    MEMBER_PROFILE: '<?php echo $vars['url']; ?>pg/profile/'
 	},
 
@@ -928,8 +945,10 @@ BeeChat.UI = {
      *  Initialize the BeeChat UI
      *
      */
-    initialize: function()
+    initialize: function(ts, token)
     {
+	this.ts = ts;
+	this.token = token;
 	$('#' + BeeChat.UI.Resources.Elements.ID_TOOLTIP_TRIGGER).tooltip({
 		offset: [-3, 8],
 		effect: 'fade'
@@ -953,16 +972,22 @@ BeeChat.UI = {
      *    User details in object notation.
      *
      */
-    getUserDetails: function()
+    addActionTokens: function(url_string)
+    {
+	return url_string + "?__elgg_ts="+this.ts + "&__elgg_token=" + this.token;
+    },
+
+    getUserDetails: function(cb_func)
     {
 	var json = null;
+	var self = this;
 
 	$.ajax({
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/get_details") ?>',
-		async: false,
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/get_details"; ?>'),
+		async: true,
 		dataType: 'json',
 		success: function(data) {
-		    json = data;
+			cb_func(data);
 		}
 	    });
 
@@ -982,14 +1007,21 @@ BeeChat.UI = {
 	    jid: (conn != null) ? conn.jid : null,
 	    password: null
 	}
-
+	var self = this;
+	//alert("connect");
 	if (conn == null || (conn != null && conn.attached)) {
-	    var retrievedUserDetails = BeeChat.UI.getUserDetails();
-
-	    userDetails.jid = retrievedUserDetails.username + '@' + BeeChat.DOMAIN + '/' + BeeChat.RESOURCE;
-	    userDetails.password = retrievedUserDetails.password;
+	    BeeChat.UI.getUserDetails(function(retrievedUserDetails) {
+	    	userDetails.jid = retrievedUserDetails.username + '@' + BeeChat.DOMAIN + '/' + BeeChat.RESOURCE;
+	    	userDetails.password = retrievedUserDetails.password;
+		self.connect_end(conn, userDetails)
+	    });
 	}
+	else
+	        this.connect_end(conn, userDetails)
+    },
 
+    connect_end: function(conn, userDetails)
+    {
 	g_beechat_user = new BeeChat.Core.User(userDetails.jid);
 	g_beechat_user.addObserver(BeeChat.Events.Identifiers.UPDATE_CONNECTION_STATE, BeeChat.UI.updateConnectionStatus);
 	g_beechat_user.addObserver(BeeChat.Events.Identifiers.UPDATE_ROSTER, BeeChat.UI.onRosterUpdate);
@@ -1001,7 +1033,7 @@ BeeChat.UI = {
 	else
 	    g_beechat_user.attach(conn.sid, conn.rid);
     },
-
+ 
     /** Function: disconnect
      *  Terminate the user's XMPP session
      *
@@ -1020,7 +1052,7 @@ BeeChat.UI = {
 	if (connStatusMsg == BeeChat.Events.Messages.ConnectionStates.ONLINE) {
 	    if (!g_beechat_user.isAttached()) {
 		g_beechat_user.requestRoster();
-		BeeChat.UI.ContactsList.toggleDisplay();
+		//BeeChat.UI.ContactsList.toggleDisplay();
 		$('#' + BeeChat.UI.Resources.Elements.ID_UL_CONTACTS_LIST).show();
 		$('.' + BeeChat.UI.Resources.StyleClasses.ChatBox.INPUT + '>textarea').removeAttr('disabled');
 	    }
@@ -1046,6 +1078,7 @@ BeeChat.UI = {
 	    $('#' + BeeChat.UI.Resources.Elements.ID_DIV_SCROLLBOXES).find('ul').children()
 	    .attr('class', BeeChat.UI.Resources.StyleClasses.LABEL + ' ' + BeeChat.UI.Resources.ReferenceTables.Styles.Availability.Left[BeeChat.Presence.Types.UNAVAILABLE.toUpperCase()]);
 	    g_beechat_user = null;
+	    BeeChat.UI.saveConnection();
 	}
     },
 
@@ -1067,11 +1100,12 @@ BeeChat.UI = {
 		'attached': g_beechat_user.isAttached()
 	    };
 	}
+	var self = this;
 
 	$.ajax({
 		type: 'POST',
 		async: false,
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/save_state") ?>',
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/save_state"; ?>'),
 		data: { beechat_conn: JSON.stringify(conn) }
 	    });
 
@@ -1088,20 +1122,20 @@ BeeChat.UI = {
      */
     loadConnection: function()
     {
+	var self = this;
 	$.ajax({
 		type: 'GET',
 		async: false,
 		cache: false,
 		dataType: 'json',
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/get_connection") ?>',
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/get_connection"; ?>'),
 		success: function(conn) {
 		    if (conn != null) {
 			if (conn.attached)
 			    BeeChat.UI.connect();
 			else
 			    BeeChat.UI.connect(conn);
-		    } else
-		      BeeChat.UI.connect();
+			}
 		},
 		error: function() {
 		    BeeChat.UI.connect();
@@ -1127,6 +1161,7 @@ BeeChat.UI = {
      */
     saveState: function()
     {
+	var self = this;
 	var currentAvailabilityClass = $('#' + BeeChat.UI.Resources.Elements.ID_SPAN_CURRENT_AVAILABILITY).attr('class');
 	var currentAvailability = currentAvailabilityClass.substr(currentAvailabilityClass.lastIndexOf('_') + 1);
 
@@ -1153,7 +1188,7 @@ BeeChat.UI = {
 	$.ajax({
 		type: 'POST',
 		async: false,
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/save_state") ?>',
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/save_state"; ?>'),
 		data: { beechat_state: JSON.stringify(data) }
 	    });
     },
@@ -1164,12 +1199,13 @@ BeeChat.UI = {
      */
     loadState: function()
     {
+	var self = this;
 	$.ajax({
 		type: 'GET',
 		async: true,
 		cache: false,
 		dataType: 'json',
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/get_state") ?>',
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/get_state"; ?>'),
 		success: function(json) {
 		    BeeChat.UI.AvailabilitySwitcher.initialize(json.availability);
 
@@ -1231,10 +1267,11 @@ BeeChat.UI = {
     loadRosterItemsIcons: function()
     {
 	var data = g_beechat_user.getRoster().getItemsUsernamesAsList();
+	var self = this;
 
 	$.ajax({
 		type: 'POST',
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/get_icons") ?>',
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/get_icons"; ?>'),
 		async: true,
 		cache: false,
 		data: {'beechat_roster_items_usernames': data},
@@ -1252,10 +1289,11 @@ BeeChat.UI = {
     loadRosterItemsStatuses: function()
     {
 	var data = g_beechat_user.getRoster().getItemsUsernamesAsList();
-
+//alert(data)
+	var self = this;
 	$.ajax({
 		type: 'POST',
-		url: '<?php echo elgg_add_action_tokens_to_url($vars['url'] . "action/beechat/get_statuses") ?>',
+		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/get_statuses"; ?>'),
 		async: true,
 		cache: false,
 		data: {'beechat_roster_items_usernames': data},
@@ -1274,7 +1312,9 @@ BeeChat.UI = {
     onRosterUpdate: function(rosterItems)
     {
 	g_beechat_roster_items = rosterItems;
+		//alert("get roster");
 	if (!g_beechat_user.isInitialized()) {
+		//alert("load roster" + rosterItems.length);
 	    BeeChat.UI.loadRosterItemsIcons();
 	    BeeChat.UI.loadRosterItemsStatuses();
 	    g_beechat_user.sendInitialPresence();
@@ -1286,10 +1326,14 @@ BeeChat.UI = {
      */
     onChatMessage: function(data)
     {
-	if ($(data.msg).find('body').length == 0)
+	debugXMPP('message arrived');
+	if ($(data.msg).find('body').length == 0) {
 	    BeeChat.UI.ChatBoxes.updateChatState(data.contactBareJid, data.msg);
-	else
+	}
+	else {
+		debugXMPP(Strophe.getText($(data.msg).find('body')[0]));
 	    BeeChat.UI.ChatBoxes.update(data.contactBareJid, BeeChat.UI.Utils.getContactName(data.contactBareJid), Strophe.getText($(data.msg).find('body')[0]));
+	}
     }
 };
 
@@ -1857,6 +1901,7 @@ BeeChat.UI.ChatBoxes = {
      */
     update: function(contactBareJid, fromName, msg)
     {
+	debugXMPP("chatboxes update "+msg+" "+fromName+" "+contactBareJid);
 	var chatBoxElm = BeeChat.UI.ChatBoxes.getChatBoxElm(contactBareJid);
 
 	if (chatBoxElm.length == 0) {
@@ -1865,12 +1910,14 @@ BeeChat.UI.ChatBoxes = {
 	}
 
 	var chatBoxContentElm = chatBoxElm.children().filter('[bareJid=' + contactBareJid + ']');
+	debugXMPP("chatboxes update "+msg+" "+fromName+" "+chatBoxContentElm);
 
 	chatBoxContentElm.find('p').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.STATE + ']').remove();
 
 	var chatBoxLastMessageElm = $(chatBoxContentElm).find('div').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.MESSAGE + ']').filter(':last');
 
-	if (chatBoxLastMessageElm.find('span').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.MESSAGE_SENDER + ']').text() == fromName) {
+	if (chatBoxLastMessageElm && chatBoxLastMessageElm.find('span').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.MESSAGE_SENDER + ']').text() == fromName) {
+	    debugXMPP("one " + chatBoxLastMessageElm + " " + fromName);
 	    chatBoxLastMessageElm.append('<p>' + BeeChat.UI.Utils.getPrintableChatMessage(msg) + '</p>');
 	} else {
 	    chatBoxContentElm.append($('<div></div>')
@@ -1895,12 +1942,12 @@ BeeChat.UI.ChatBoxes = {
 
 	if (chatBoxElm.is(':hidden')) {
 	    BeeChat.UI.UnreadCountBox.update(contactBareJid);
-	    if (BeeChat.UI.HAS_FOCUS)
-		document.getElementById(BeeChat.UI.Resources.Sounds.NEW_MESSAGE).Play();
+//	    if (BeeChat.UI.HAS_FOCUS)
+//		document.getElementById(BeeChat.UI.Resources.Sounds.NEW_MESSAGE).Play();
 	}
 
-	if (!BeeChat.UI.HAS_FOCUS)
-	    document.getElementById(BeeChat.UI.Resources.Sounds.NEW_MESSAGE).Play();
+//	if (!BeeChat.UI.HAS_FOCUS)
+//	    document.getElementById(BeeChat.UI.Resources.Sounds.NEW_MESSAGE).Play();
     },
 
     /** Function: updateChatState
@@ -2037,6 +2084,9 @@ BeeChat.UI.Utils = {
 
 	if (g_beechat_roster_items != null && g_beechat_roster_items[bareJid])
 	    contactName = g_beechat_roster_items[bareJid].name;
+	// no contact name so we show bareJid
+	if (!contactName || contactName == '')
+		contactName = bareJid;
 
 	return (contactName);
     },
@@ -2083,6 +2133,7 @@ BeeChat.UI.Utils = {
      */
     replaceSmileys: function(str)
     {
+	str = str.replace(/(;\))/gi, '<img src="' + BeeChat.UI.Resources.Paths.ICONS + BeeChat.UI.Resources.Emoticons.FILENAME_WINK + '" />');
 	str = str.replace(/(:\))/gi, '<img src="' + BeeChat.UI.Resources.Paths.ICONS + BeeChat.UI.Resources.Emoticons.FILENAME_SMILE + '" />');
 	str = str.replace(/(:\()/gi, '<img src="' + BeeChat.UI.Resources.Paths.ICONS + BeeChat.UI.Resources.Emoticons.FILENAME_UNHAPPY + '" />');
 	str = str.replace(/(:D)/gi, '<img src="' + BeeChat.UI.Resources.Paths.ICONS + BeeChat.UI.Resources.Emoticons.FILENAME_GRIN + '" />');
@@ -2126,12 +2177,12 @@ BeeChat.UI.Utils = {
 /** Executed when the DOM is ready
  *
  */
-function init_beechat() {
+function init_beechat(ts, token) {
 	if (typeof document.body.style.maxHeight === "undefined") { // IE6
 	    return;
 	}
 
-	BeeChat.UI.initialize();
+	BeeChat.UI.initialize(ts, token);
 }
 
 /** Window resizing

@@ -1,3 +1,8 @@
+<?php
+   global $CONFIG;
+   $url = $CONFIG->wwwroot;
+
+?>
 /**
  * Beechat
  * 
@@ -154,7 +159,7 @@ span#beechat_contacts_button {
     font-size: 1.1em;
     font-weight: normal;
 
-    background-image: url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/statuses.png');
+    background-image: url('<?php echo $url; ?>mod/beechat/graphics/icons/statuses.png');
 }
 span#beechat_contacts_button.online {
     background-position: 4px -750px;
@@ -203,10 +208,10 @@ span#beechat_availability_switcher_control {
     cursor: pointer;
 }
 span.beechat_availability_switcher_control_up {
-    background: no-repeat 50% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_arrow_up.png');
+    background: no-repeat 50% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_arrow_up.png');
 }
 span.beechat_availability_switcher_control_down {
-    background: no-repeat 50% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_arrow_down.png');
+    background: no-repeat 50% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_arrow_down.png');
 }
 ul#beechat_availability_switcher_list {
     display: none;
@@ -299,7 +304,7 @@ div#beechat_center .next {
     width: 24px;
     height: 20px;
 
-    background: no-repeat 50% url("<?php echo $vars['url']; ?>mod/beechat/graphics/icons/resultset_next.png");
+    background: no-repeat 50% url("<?php echo $url; ?>mod/beechat/graphics/icons/resultset_next.png");
 }
 div#beechat_center .prev {
     position: absolute;
@@ -307,7 +312,7 @@ div#beechat_center .prev {
     width: 24px;
     height: 20px;
 
-    background: no-repeat 50% url("<?php echo $vars['url']; ?>mod/beechat/graphics/icons/resultset_previous.png");
+    background: no-repeat 50% url("<?php echo $url; ?>mod/beechat/graphics/icons/resultset_previous.png");
 }
 div#beechat_scrollboxes {
     float: right;
@@ -353,7 +358,7 @@ div#beechat_scrollboxes ul li span.beechat_unread_count {
     text-align: center;
     font-size: 0.7em;
     color: white;
-    background: no-repeat 0% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/notification_pink.png');
+    background: no-repeat 0% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/notification_pink.png');
 }
 div#beechat_scrollboxes ul li span#beechat_box_control_close {
     float: right;
@@ -368,36 +373,36 @@ div#beechat_scrollboxes ul li span#beechat_box_control_close {
 ** --
 */
 .beechat_left_availability_chat {
-    background: no-repeat 2% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_green.png');
+    background: no-repeat 2% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_green.png');
 }
 .beechat_left_availability_dnd {
-    background: no-repeat 2% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_delete.png');
+    background: no-repeat 2% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_delete.png');
 }
 .beechat_left_availability_away {
-    background: no-repeat 2% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_orange.png');
+    background: no-repeat 2% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_orange.png');
 }
 .beechat_left_availability_xa {
-    background: no-repeat 2% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_red.png');
+    background: no-repeat 2% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_red.png');
 }
 .beechat_left_availability_offline {
-    background: no-repeat 2% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_black.png');
+    background: no-repeat 2% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_black.png');
 }
 
 
 .beechat_right_availability_chat {
-    background: no-repeat 96% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_green.png');
+    background: no-repeat 96% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_green.png');
 }
 .beechat_right_availability_dnd {
-    background: no-repeat 96% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_delete.png');
+    background: no-repeat 96% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_delete.png');
 }
 .beechat_right_availability_away {
-    background: no-repeat 96% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_orange.png');
+    background: no-repeat 96% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_orange.png');
 }
 .beechat_right_availability_xa {
-    background: no-repeat 96% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_red.png');
+    background: no-repeat 96% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_red.png');
 }
 .beechat_right_availability_offline {
-    background: no-repeat 96% 50% url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/bullet_black.png');
+    background: no-repeat 96% 50% url('<?php echo $url; ?>mod/beechat/graphics/icons/bullet_black.png');
 }
 
 /*
@@ -409,7 +414,7 @@ div.tooltip.tooltipchat {
     display: none;
     padding: 4px;
     width: auto;
-    background: transparent no-repeat left bottom url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/pointer.png');
+    background: transparent no-repeat left bottom url('<?php echo $url; ?>mod/beechat/graphics/icons/pointer.png');
 }
 div.tooltip.tooltipchat h3 {
     margin: 0;
@@ -567,7 +572,7 @@ div.beechat_chatbox_input textarea {
     font-family: Arial, Helvetica, "Liberation Sans", FreeSans, sans-serif;
     outline: none;
     border: none;
-    background: white no-repeat 4px 3px url('<?php echo $vars['url']; ?>mod/beechat/graphics/icons/chat_icon.png');
+    background: white no-repeat 4px 3px url('<?php echo $url; ?>mod/beechat/graphics/icons/chat_icon.png');
 }
 div.beechat_chatbox_input textarea:focus {
     outline: none;

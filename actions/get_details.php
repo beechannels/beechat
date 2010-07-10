@@ -9,9 +9,9 @@
 	 * @link http://beechannels.com/
 	 */
 	
-	header('Content-type: application/json');
 	gatekeeper();
-	
+	header('Content-type: application/json');
+	error_log("beechat: get_details");
 	$user = $_SESSION['user'];
 	$t = array('username' => $user->username,
 		   'password' => $user->password);

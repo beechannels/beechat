@@ -11,11 +11,12 @@
 
 	header('Content-type: application/json');
 	gatekeeper();
-	
-	if (!empty($_POST['beechat_roster_items_usernames']))
+	error_log("beechat:get_statuses");
+	$usernames = get_input('beechat_roster_items_usernames');
+	if (!empty($usernames))
 	{
 		$iconSize = 'small';
-		$rosterItemsUsernames = explode(',', $_POST['beechat_roster_items_usernames']);
+		$rosterItemsUsernames = explode(',', $usernames);
 		$userFriendsEntities = $_SESSION['user']->getFriends('', count($rosterItemsUsernames), 0);
 		
 		$res = array();
