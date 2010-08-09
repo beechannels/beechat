@@ -15,7 +15,7 @@
 	
 	if (!empty($_POST['beechat_state']))
 	{
-		$SESSION->offsetSet('beechat_state', get_input('beechat_state'));
+		$SESSION->offsetSet('beechat_state', $_POST['beechat_state']);
 	} 
 	elseif (!empty($_POST['beechat_conn']))
 	{

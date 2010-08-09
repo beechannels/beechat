@@ -15,12 +15,8 @@
 	if (!empty($_POST['beechat_roster_items_usernames']))
 	{
 		$rosterItemsUsernames = explode(',', $_POST['beechat_roster_items_usernames']);
-		/*foreach ($rosterItemsUsernames as $rosterItem)
-		{
-		}*/
-		error_log("beechat: getting icons for ".implode(',' , $rosterItemsUsernames));
-		//$userFriendsEntities = $_SESSION['user']->getFriends('', count($rosterItemsUsernames), 0);
-		$userFriendsEntities = $_SESSION['user']->getFriends('', 0, 0);
+
+		$userFriendsEntities = $_SESSION['user']->getFriends('', 1000000000, 0);
 		
 		$res = array();
 		foreach ($rosterItemsUsernames as $value)
