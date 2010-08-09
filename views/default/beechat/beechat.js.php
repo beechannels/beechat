@@ -14,15 +14,6 @@
 g_beechat_user = null;
 g_beechat_roster_items = null;
 
-function debugXMPP(msg) {
-	try {
-		console.log(msg)
-	}
-		catch (err) {
-	}
-	//$('#layout_footer').html($('#layout_footer').html()+'<br/>'+msg);
-}
-
 /** Class: BeeChat
  *  An object container for all BeeChat mod functions
  *
@@ -248,7 +239,6 @@ BeeChat.Core.User = function(jid)
      */
     this.connect = function(password)
     {
-	debugXMPP('connect');
 	if (_connection == null)
 	    _connection = new Strophe.Connection(BeeChat.BOSH_SERVICE);
 	_connection.connect(_jid, password, _onConnect);
@@ -277,7 +267,6 @@ BeeChat.Core.User = function(jid)
      */
     this.disconnect = function()
     {
-	debugXMPP('disconnect');
 	if (_connection != null) {
 	    _connection.disconnect();
 	    _connection = null;
@@ -473,7 +462,7 @@ BeeChat.Core.User = function(jid)
 	    msg: message
 	};
 	_msgTemp.push(data);
-	//alert("message");
+
 	if (_initialized == true) {
 	    for (var key in _msgTemp) {
 		if (typeof _msgTemp[key] != 'object')
@@ -546,9 +535,7 @@ BeeChat.Core.Roster = function()
 
     this.setStatuses = function(statuses)
     {
-//alert(statuses);
 	for (var key in statuses)  {
-//alert(statuses);
 	    _items[key + '@' + BeeChat.DOMAIN].status = statuses[key];
 	}
     }
@@ -610,8 +597,6 @@ BeeChat.Core.Roster = function()
 
 	attr.presences[jid] = {};
 	attr.presences[jid].type = (!$(presence).attr('type')) ? 'available' : $(presence).attr('type');
-	//alert($(presence).attr('from')+presence.toString());
-	//alert("presencetype"+attr.presences[jid].type);
 
 	if (attr.presences[jid].type == 'available') {
 	    $(presence).children().each(function() {
@@ -1008,7 +993,6 @@ BeeChat.UI = {
 	    password: null
 	}
 	var self = this;
-	//alert("connect");
 	if (conn == null || (conn != null && conn.attached)) {
 	    BeeChat.UI.getUserDetails(function(retrievedUserDetails) {
 	    	userDetails.jid = retrievedUserDetails.username + '@' + BeeChat.DOMAIN + '/' + BeeChat.RESOURCE;
@@ -1101,12 +1085,13 @@ BeeChat.UI = {
 	    };
 	}
 	var self = this;
-
+	
 	$.ajax({
 		type: 'POST',
 		async: false,
 		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/save_state"; ?>'),
-		data: { beechat_conn: JSON.stringify(conn) }
+		data: { beechat_conn: JSON.stringify(conn) },
+		async:false
 	    });
 
 	/*
@@ -1189,7 +1174,8 @@ BeeChat.UI = {
 		type: 'POST',
 		async: false,
 		url: self.addActionTokens('<?php echo $vars['url'] . "action/beechat/save_state"; ?>'),
-		data: { beechat_state: JSON.stringify(data) }
+		data: { beechat_state: JSON.stringify(data) },
+		async:false 
 	    });
     },
 
@@ -1210,8 +1196,8 @@ BeeChat.UI = {
 		    BeeChat.UI.AvailabilitySwitcher.initialize(json.availability);
 
 		    if (!json.contacts_list.minimized) {
-			$('#' + BeeChat.UI.Resources.Elements.ID_DIV_CONTACTS).show();
-			BeeChat.UI.ContactsList.showedStyle();
+				$('#' + BeeChat.UI.Resources.Elements.ID_DIV_CONTACTS).show();
+				BeeChat.UI.ContactsList.showedStyle();
 		    }
 
 		    g_beechat_user.getRoster().setItems(json.contacts);
@@ -1289,7 +1275,7 @@ BeeChat.UI = {
     loadRosterItemsStatuses: function()
     {
 	var data = g_beechat_user.getRoster().getItemsUsernamesAsList();
-//alert(data)
+
 	var self = this;
 	$.ajax({
 		type: 'POST',
@@ -1312,9 +1298,9 @@ BeeChat.UI = {
     onRosterUpdate: function(rosterItems)
     {
 	g_beechat_roster_items = rosterItems;
-		//alert("get roster");
+
 	if (!g_beechat_user.isInitialized()) {
-		//alert("load roster" + rosterItems.length);
+
 	    BeeChat.UI.loadRosterItemsIcons();
 	    BeeChat.UI.loadRosterItemsStatuses();
 	    g_beechat_user.sendInitialPresence();
@@ -1326,12 +1312,10 @@ BeeChat.UI = {
      */
     onChatMessage: function(data)
     {
-	debugXMPP('message arrived');
 	if ($(data.msg).find('body').length == 0) {
 	    BeeChat.UI.ChatBoxes.updateChatState(data.contactBareJid, data.msg);
 	}
 	else {
-		debugXMPP(Strophe.getText($(data.msg).find('body')[0]));
 	    BeeChat.UI.ChatBoxes.update(data.contactBareJid, BeeChat.UI.Utils.getContactName(data.contactBareJid), Strophe.getText($(data.msg).find('body')[0]));
 	}
     }
@@ -1901,7 +1885,6 @@ BeeChat.UI.ChatBoxes = {
      */
     update: function(contactBareJid, fromName, msg)
     {
-	debugXMPP("chatboxes update "+msg+" "+fromName+" "+contactBareJid);
 	var chatBoxElm = BeeChat.UI.ChatBoxes.getChatBoxElm(contactBareJid);
 
 	if (chatBoxElm.length == 0) {
@@ -1910,14 +1893,12 @@ BeeChat.UI.ChatBoxes = {
 	}
 
 	var chatBoxContentElm = chatBoxElm.children().filter('[bareJid=' + contactBareJid + ']');
-	debugXMPP("chatboxes update "+msg+" "+fromName+" "+chatBoxContentElm);
 
 	chatBoxContentElm.find('p').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.STATE + ']').remove();
 
 	var chatBoxLastMessageElm = $(chatBoxContentElm).find('div').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.MESSAGE + ']').filter(':last');
 
 	if (chatBoxLastMessageElm && chatBoxLastMessageElm.find('span').filter('[class=' + BeeChat.UI.Resources.StyleClasses.ChatBox.MESSAGE_SENDER + ']').text() == fromName) {
-	    debugXMPP("one " + chatBoxLastMessageElm + " " + fromName);
 	    chatBoxLastMessageElm.append('<p>' + BeeChat.UI.Utils.getPrintableChatMessage(msg) + '</p>');
 	} else {
 	    chatBoxContentElm.append($('<div></div>')
@@ -2096,11 +2077,15 @@ BeeChat.UI.Utils = {
      */
     getPrintableChatMessage: function(msg)
     {
-	msg = jQuery.trim(msg);
-	msg = BeeChat.UI.Utils.replaceLinks(msg);
-	msg = BeeChat.UI.Utils.replaceSmileys(msg);
+    	var val = new String;
+		val = $('<div>' + msg + '</div>');
+		msg = val.text();
+		
+		msg = jQuery.trim(msg);
+		msg = BeeChat.UI.Utils.replaceLinks(msg);
+		msg = BeeChat.UI.Utils.replaceSmileys(msg);
 
-	return msg;
+		return msg;
     },
 
     /** Function: getNowFormattedTime
@@ -2217,7 +2202,6 @@ $(window).unload(function() {
 	    g_beechat_user.requestSessionPause();
 	    BeeChat.UI.saveState();
 	}
-
 	BeeChat.UI.saveConnection();
     });
 

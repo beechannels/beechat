@@ -9,12 +9,11 @@
 	 * @link http://beechannels.com/
 	 */
 
-if (isloggedin() && get_loggedin_user()->chatenabled) {
-
-?>	 
+if (isloggedin() && !get_loggedin_user()->chatdisabled) {
+?>
 <div id="beechat">
   <div id="beechat_left">
-    <a id="beechat_tooltip_trigger" href="<?php echo $vars['url']; ?>"><img src="<?php echo $vars['config']->staticurl; ?>mod/theme_beebac2/graphics/favicon.ico" /></a>
+    <a id="beechat_tooltip_trigger" href="<?php echo $vars['url']; ?>"></a>
     <div class="tooltip tooltipchat">
       <h3><?php echo elgg_echo('beechat:icons:home'); ?></h3>
     </div>
@@ -70,14 +69,14 @@ if (isloggedin() && get_loggedin_user()->chatenabled) {
 ?>
 
 <script>
-	$(window).load(function () {
+	$(function () {
 		var e = document.createElement('script');
 		e.async = true;
 		e.type = 'text/javascript';
-                e.innerHTML = 'init_beechat("<?php echo $ts; ?>","<?php echo $token; ?>");';
-                document.getElementById('beechat').appendChild(e);
+        e.innerHTML = 'init_beechat("<?php echo $ts; ?>","<?php echo $token; ?>");';
+        document.getElementById('beechat').appendChild(e);
 
-	})
+	});
 </script>       
 
 <?php

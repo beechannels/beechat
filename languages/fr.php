@@ -23,7 +23,11 @@ $fr_array = array(
 
 		  'beechat:box:minimize' => 'Diminuer',
 		  'beechat:box:close' => 'Fermer',
-		  'beechat:box:showhide' => 'Montrer/Cacher cette fenêtre de chat'
+		  'beechat:box:showhide' => 'Montrer/Cacher cette fenêtre de chat',
+		  'beechat:enabled' => 'Chat activé',
+		  'beechat:disabled' => 'Chat désactivté',
+		  'beechat:enablechat' => 'Activer le chat',
+		  'beechat:disablechat' => 'Désactivé le chat',
 
 		  );
 
