@@ -32,8 +32,10 @@ August 9th, 2010
 - users can disable the chat in their settings
 - migrate.php added that will make the initial sync
 - make the get roster js action asynchronous
-- fix buddy list issue when changing page
+- fix buddy list issue when reloading page
 - fix security issues (XSS)
+- works on Elgg 1.6 and 1.7
+- user profile picture appears in chat box
 
 Thanks
 ------
