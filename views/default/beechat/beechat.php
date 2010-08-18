@@ -73,7 +73,7 @@ if (isloggedin() && !get_loggedin_user()->chatdisabled) {
 		var e = document.createElement('script');
 		e.async = true;
 		e.type = 'text/javascript';
-        e.innerHTML = 'init_beechat("<?php echo $ts; ?>","<?php echo $token; ?>");';
+        e.text = 'init_beechat("<?php echo $ts; ?>","<?php echo $token; ?>");';
         document.getElementById('beechat').appendChild(e);
 
 	});

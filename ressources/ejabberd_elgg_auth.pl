@@ -128,6 +128,5 @@ sub auth_ext {
 	$sth->finish;
 	$result = $count[0] || 0;
     }
-$result = 1;
     return ($result);
 }
