@@ -801,10 +801,6 @@ BeeChat.UI = {
 	    MEMBER_PROFILE: '<?php echo $vars['url']; ?>pg/profile/'
 	},
 
-	Sounds: {
-	    NEW_MESSAGE: 'beechat_sounds_new_message'
-	},
-
 	/*
 	Cookies: {
 	    DOMAIN: 'beechannels.com',
@@ -1923,12 +1919,12 @@ BeeChat.UI.ChatBoxes = {
 
 	if (chatBoxElm.is(':hidden')) {
 	    BeeChat.UI.UnreadCountBox.update(contactBareJid);
-//	    if (BeeChat.UI.HAS_FOCUS)
-//		document.getElementById(BeeChat.UI.Resources.Sounds.NEW_MESSAGE).Play();
+	    if (BeeChat.UI.HAS_FOCUS)
+	    	DHTMLSound();
 	}
 
-//	if (!BeeChat.UI.HAS_FOCUS)
-//	    document.getElementById(BeeChat.UI.Resources.Sounds.NEW_MESSAGE).Play();
+	if (!BeeChat.UI.HAS_FOCUS)
+		DHTMLSound();
     },
 
     /** Function: updateChatState
@@ -2168,6 +2164,14 @@ function init_beechat(ts, token) {
 	}
 
 	BeeChat.UI.initialize(ts, token);
+}
+
+/** Play pock sound
+ *
+ */
+function DHTMLSound() {
+  document.getElementById("beechatpock").innerHTML=
+    "<embed src='<?php echo $vars['url'] ?>mod/beechat/sounds/newmessage.wav' hidden=true autostart=true loop=false>";
 }
 
 /** Window resizing

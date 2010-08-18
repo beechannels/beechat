@@ -21,6 +21,11 @@ feedback. File bugs or other issues [here][issues].
 
 ## Changes
 
+August 18th, 2010
+
+- Fix issue with ie
+- Add an alert sound when receiving a new message
+
 August 9th, 2010
 
 - cooked js doesn't cook tokens or languages (separated now to another file)

@@ -74,6 +74,7 @@ try {
     $dbh_ejabberd->rollBack();
   echo $e->getMessage();
 }
+echo "migration complete";
 ?>
  
 

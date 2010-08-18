@@ -57,11 +57,7 @@ if (isloggedin() && !get_loggedin_user()->chatdisabled) {
   <div id="beechat_chatboxes"></div>
 </div>
 <!-- SOUNDS -->
-<!--
-<embed src="<?php echo $vars['config']->staticurl; ?>mod/beechat/sounds/newmessage.wav" autostart=false width=0 height=0
-       id="beechat_sounds_new_message"
-       enablejavascript="true" />
--->
+<span id="beechatpock"></span>
 
 <?php
         $ts = time();
