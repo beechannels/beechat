@@ -17,7 +17,7 @@
 	{
 		$iconSize = 'small';
 		$rosterItemsUsernames = explode(',', $usernames);
-		$userFriendsEntities = $_SESSION['user']->getFriends('', count($rosterItemsUsernames), 0);
+		$userFriendsEntities = $_SESSION['user']->getFriends('', 1000000000, 0);
 		
 		$res = array();
 		foreach ($rosterItemsUsernames as $value)
