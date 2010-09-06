@@ -1801,7 +1801,7 @@ BeeChat.UI.ChatBoxes = {
 			.bind('keypress', BeeChat.UI.ChatBoxes.onTypingMessage)
 			.bind('keyup', function(e) {
 				if ((e.keyCode ? e.keyCode : e.which) == 13)
-				    $(this).val('');
+				    $(this).attr('value', '');
 			    }));
 
 	    var chatBoxBottom = $('<div></div>')

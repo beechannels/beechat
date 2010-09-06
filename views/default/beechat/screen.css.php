@@ -467,8 +467,8 @@ div.beechat_chatbox_top .beechat_chatbox_top_icon {
     left: 4px;
     z-index: 2;
 
-    widht: 50px;
-    height: 50px;
+    widht: 40px;
+    height: 40px;
 }
 div.beechat_chatbox_top .beechat_label {
     float: left;
